@@ -14,8 +14,15 @@ class SaveViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     @IBOutlet var contentTextView: UITextView!
     @IBOutlet var titleTextField: UITextField!
     @IBOutlet var photoSelectButton: UIButton!
-    @IBOutlet var mainImageView: UIImageView!
+    @IBOutlet var mainImageView: UIImage!
     @IBOutlet var displayDateLabel: UILabel!
+    
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        self.navigationController?.navigationBar.barTintColor = UIColor(red: 43, green: 216, blue: 164, alpha: 1)
+//        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+//        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
+//    }
     
     
     @IBAction func photoSelectButtonTouchDown(sender: AnyObject){
@@ -32,7 +39,7 @@ class SaveViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         
         func imagePickerController(picker: UIImagePickerController!, didfinishPikingMediaWithInfo info: NSDictionary!){
             let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-            mainImageView.image = image
+            mainImageView = UIImage(named: "Fahionimage" )
             
             self.dismissViewControllerAnimated(true, completion: nil)
         }
@@ -41,15 +48,15 @@ class SaveViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     @IBOutlet var fashionimage: UIImageView!
     
-//    @IBAction func selectBackground(){
-//        let imagePickerController: UIImagePickerController = UIImagePickerController()
-//        
-//        imagePickerController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
-//        imagePickerController.delegate = self
-//        imagePickerController.allowsEditing = true
-//        
-//        self.presentViewController(imagePickerController, animated: true, completion: nil)
-//    }
+    @IBAction func selectBackground(){
+        let imagePickerController: UIImagePickerController = UIImagePickerController()
+        
+        imagePickerController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
+        imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
+        
+        self.presentViewController(imagePickerController, animated: true, completion: nil)
+    }
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         
@@ -60,9 +67,24 @@ class SaveViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     }
     
     @IBAction func save() {
+        
+        UIImageWriteToSavedPhotosAlbum(mainImageView, self, "image:didFinishSavingWithError:contextInfo:", nil)
     
     }
     
+    func image(image: UIImage, didFinishSavingWithError error: NSError!, contextInfo: UnsafeMutablePointer<Void>) {
+        
+        var title = "保存完了"
+        var message = "アルバムへの保存完了"
+        
+        if error != nil {
+            title = "エラー"
+            message = "アルバムへの保存に失敗しました"
+        }
+        
+        let alert = UIAlertView(title: title, message: message, delegate: nil, cancelButtonTitle: nil, otherButtonTitles: "OK")
+        alert.show()
+    }
 
     
 

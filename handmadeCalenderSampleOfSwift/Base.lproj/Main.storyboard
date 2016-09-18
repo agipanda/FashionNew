@@ -52,7 +52,9 @@
                     </navigationItem>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
+                        <outlet property="displayDateLabel" destination="SSn-uZ-SEh" id="7Zp-o0-ofn"/>
                         <outlet property="fashionimage" destination="Dvf-xx-OVZ" id="uou-x7-cGV"/>
+                        <outlet property="mainImageView" destination="Dvf-xx-OVZ" id="8Hc-9W-cJy"/>
                         <outlet property="photoSelectButton" destination="4np-F5-5su" id="ykJ-3Q-DEY"/>
                         <outlet property="titleTextField" destination="SMu-On-ZmP" id="uDB-lS-wti"/>
                     </connections>

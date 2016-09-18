@@ -464,22 +464,22 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         animation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.1, 1.1, 1.0))
         button.layer.addAnimation(animation, forKey: nil)
         
-        for i in 0...6{
-            
-            if(i == 0){
-                button.backgroundColor = UIColor(
-                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
-                )
-            }else if(i == 6){
-                button.backgroundColor = UIColor(
-                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
-                )
-            }else{
-                button.backgroundColor = UIColor(
-                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
-                )
-            }
-        }
+//        for i in 0...6{
+//            
+//            if(i == 0){
+//                button.backgroundColor = UIColor(
+//                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
+//                )
+//            }else if(i == 6){
+//                button.backgroundColor = UIColor(
+//                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
+//                )
+//            }else{
+//                button.backgroundColor = UIColor(
+//                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
+//                )
+//            }
+//        }
         //   let indexPath = tableView.indexPathForRowAtPoint(point)
         let audioPath = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("click", ofType: "mp3")!)
         audioPlayer = try? AVAudioPlayer(contentsOfURL: audioPath)
