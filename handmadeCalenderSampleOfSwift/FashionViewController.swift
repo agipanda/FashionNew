@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 
 class FashionViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
+    
     
     //メンバ変数の設定（配列格納用）
     var count: Bool = false
@@ -24,7 +24,7 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     //メンバ変数の設定（カレンダー用）
-    var now: NSDate!
+    var now: Date!
     var year: Int!
     var month: Int!
     var day: Int!
@@ -32,7 +32,7 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
     var dayOfWeek: Int!
     
     //メンバ変数の設定（カレンダー関数から取得したものを渡す）
-    var comps: NSDateComponents!
+    var comps: DateComponents!
     
     //メンバ変数の設定（カレンダーの背景色）
     var calendarBackGroundColor: UIColor!
@@ -60,6 +60,11 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
     var calendarY: Int!
     var calendarSize: Int!
     var calendarFontSize: Int!
+    
+    
+    
+    var dayNum: Int = 0
+    
     
     override func viewDidLoad() {
         
@@ -137,8 +142,8 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
             calendarSize           = 45;
             calendarFontSize       = 19;
             
-            self.prevMonthButton.frame = CGRectMake(15, 438, CGFloat(calendarSize), CGFloat(calendarSize));
-            self.nextMonthButton.frame = CGRectMake(314, 438, CGFloat(calendarSize), CGFloat(calendarSize));
+            self.prevMonthButton.frame = CGRect(x: 15, y: 438, width: CGFloat(calendarSize), height: CGFloat(calendarSize));
+            self.nextMonthButton.frame = CGRect(x: 314, y: 438, width: CGFloat(calendarSize), height: CGFloat(calendarSize));
             
             //iPhone6 plus
         }else if (screenWidth == 414 && screenHeight == 736){
@@ -159,8 +164,8 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
             calendarSize           = 50;
             calendarFontSize       = 21;
             
-            self.prevMonthButton.frame = CGRectMake(18, 468, CGFloat(calendarSize), CGFloat(calendarSize));
-            self.nextMonthButton.frame = CGRectMake(348, 468, CGFloat(calendarSize), CGFloat(calendarSize));
+            self.prevMonthButton.frame = CGRect(x: 18, y: 468, width: CGFloat(calendarSize), height: CGFloat(calendarSize));
+            self.nextMonthButton.frame = CGRect(x: 348, y: 468, width: CGFloat(calendarSize), height: CGFloat(calendarSize));
         }
         
         //ボタンを角丸にする
@@ -168,20 +173,20 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         // nextMonthButton.layer.cornerRadius = CGFloat(buttonRadius)
         
         //現在の日付を取得する
-        now = NSDate()
+        now = Date()
         
         //inUnit:で指定した単位（月）の中で、rangeOfUnit:で指定した単位（日）が取り得る範囲
-        let calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let range: NSRange = calendar.rangeOfUnit(NSCalendarUnit.Day, inUnit:NSCalendarUnit.Month, forDate:now)
+        let calendar: Calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+        let range: NSRange = (calendar as NSCalendar).range(of: NSCalendar.Unit.day, in:NSCalendar.Unit.month, for:now)
         
         //最初にメンバ変数に格納するための現在日付の情報を取得する
-        comps = calendar.components([NSCalendarUnit.Year,NSCalendarUnit.Month,NSCalendarUnit.Day,NSCalendarUnit.Weekday],fromDate:now)
+        comps = (calendar as NSCalendar).components([NSCalendar.Unit.year,NSCalendar.Unit.month,NSCalendar.Unit.day,NSCalendar.Unit.weekday],from:now)
         
         //年月日と最後の日付と曜日を取得(NSIntegerをintへのキャスト不要)
-        let orgYear: NSInteger      = comps.year
-        let orgMonth: NSInteger     = comps.month
-        let orgDay: NSInteger       = comps.day
-        let orgDayOfWeek: NSInteger = comps.weekday
+        let orgYear: NSInteger      = comps.year!
+        let orgMonth: NSInteger     = comps.month!
+        let orgDay: NSInteger       = comps.day!
+        let orgDayOfWeek: NSInteger = comps.weekday!
         let max: NSInteger          = range.length
         
         year      = orgYear
@@ -197,14 +202,14 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         let monthName:[String] = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
         
         //曜日ラベルを動的に配置
-        setupCalendarLabel(monthName)
+        setupCalendarLabel(monthName as NSArray)
         
         //初期表示時のカレンダーをセットアップする
         setupCurrentCalendar()
     }
     
     //曜日ラベルの動的配置関数
-    func setupCalendarLabel(array: NSArray) {
+    func setupCalendarLabel(_ array: NSArray) {
         
         let calendarLabelCount = 7
         
@@ -214,11 +219,11 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
             let calendarBaseLabel: UILabel = UILabel()
             
             //X座標の値をCGFloat型へ変換して設定
-            calendarBaseLabel.frame = CGRectMake(
-                CGFloat(calendarLabelIntervalX + calendarLabelX * (i % calendarLabelCount)),
-                CGFloat(calendarLabelY),
-                CGFloat(calendarLabelWidth),
-                CGFloat(calendarLabelHeight)
+            calendarBaseLabel.frame = CGRect(
+                x: CGFloat(calendarLabelIntervalX + calendarLabelX * (i % calendarLabelCount)),
+                y: CGFloat(calendarLabelY),
+                width: CGFloat(calendarLabelWidth),
+                height: CGFloat(calendarLabelHeight)
             )
             
             //日曜日の場合は赤色を指定
@@ -226,7 +231,7 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 //RGBカラーの設定は小数値をCGFloat型にしてあげる
                 calendarBaseLabel.textColor = UIColor(
-                    red: CGFloat(0.696), green: CGFloat(0.556), blue: CGFloat(0.696), alpha: CGFloat(1.0)
+                    red: CGFloat(0.629), green: CGFloat(0.389), blue: CGFloat(0.679), alpha: CGFloat(1.0)
                 )
                 
                 //土曜日の場合は青色を指定
@@ -234,7 +239,7 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 //RGBカラーの設定は小数値をCGFloat型にしてあげる
                 calendarBaseLabel.textColor = UIColor(
-                    red: CGFloat(0.770), green: CGFloat(0.771), blue: CGFloat(0.980), alpha: CGFloat(1.0)
+                    red: CGFloat(0.629), green: CGFloat(0.389), blue: CGFloat(0.679), alpha: CGFloat(1.0)
                 )
                 
                 //平日の場合は灰色を指定
@@ -242,14 +247,14 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 //既に用意されている配色パターンの場合
                 calendarBaseLabel.textColor = UIColor(
-                    red: CGFloat(0.770), green: CGFloat(0.880), blue: CGFloat(0.771), alpha: CGFloat(1.0)
+                    red: CGFloat(0.829), green: CGFloat(0.489), blue: CGFloat(0.879), alpha: CGFloat(1.0)
                 )
                 
             }
             
             //曜日ラベルの配置
             calendarBaseLabel.text = String(array[i] as! NSString)
-            calendarBaseLabel.textAlignment = NSTextAlignment.Center
+            calendarBaseLabel.textAlignment = NSTextAlignment.center
             calendarBaseLabel.font = UIFont(name: "System", size: CGFloat(calendarLableFontSize))
             self.view.addSubview(calendarBaseLabel)
         }
@@ -273,32 +278,32 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             //ボタンをつくる
             let button: UIButton = UIButton()
-            button.frame = CGRectMake(
-                CGFloat(positionX),
-                CGFloat(positionY),
-                CGFloat(buttonSizeX),
-                CGFloat(buttonSizeY)
+            button.frame = CGRect(
+                x: CGFloat(positionX),
+                y: CGFloat(positionY),
+                width: CGFloat(buttonSizeX!),
+                height: CGFloat(buttonSizeY!)
             );
             
             //ボタンの初期設定をする
             if(i < dayOfWeek - 1){
                 
                 //日付の入らない部分はボタンを押せなくする
-                button.setTitle("", forState: .Normal)
-                button.enabled = false
+                button.setTitle("", for: UIControlState())
+                button.isEnabled = false
                 
             }else if(i == dayOfWeek - 1 || i < dayOfWeek + maxDay - 1){
                 
                 //日付の入る部分はボタンのタグを設定する（日にち）
-                button.setTitle(String(tagNumber), forState: .Normal)
+                button.setTitle(String(tagNumber), for: UIControlState())
                 button.tag = tagNumber
-                tagNumber++
+                tagNumber += 1
                 
             }else if(i == dayOfWeek + maxDay - 1 || i < total){
                 
                 //日付の入らない部分はボタンを押せなくする
-                button.setTitle("", forState: .Normal)
-                button.enabled = false
+                button.setTitle("", for: UIControlState())
+                button.isEnabled = false
                 
             }
             
@@ -306,37 +311,37 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
             //@remark:このサンプルでは正円のボタンを作っていますが、背景画像の設定等も可能です。
             if(i % 7 == 0){
                 calendarBackGroundColor = UIColor(
-                    red: CGFloat(0.699), green: CGFloat(0.589), blue: CGFloat(0.699), alpha: CGFloat(1.0)
+                    red: CGFloat(0.629), green: CGFloat(0.389), blue: CGFloat(0.679), alpha: CGFloat(1.0)
                 )
             }else if(i % 7 == 6){
                 calendarBackGroundColor = UIColor(
-                    red: CGFloat(0.700), green: CGFloat(0.771), blue: CGFloat(0.980), alpha: CGFloat(1.0)
+                    red: CGFloat(0.629), green: CGFloat(0.389), blue: CGFloat(0.679), alpha: CGFloat(1.0)
                 )
             }else{
                 calendarBackGroundColor = UIColor(
-                    red: CGFloat(0.770), green: CGFloat(0.880), blue: CGFloat(0.771), alpha: CGFloat(1.0)
+                    red: CGFloat(0.829), green: CGFloat(0.489), blue: CGFloat(0.879), alpha: CGFloat(1.0)
                 )
             }
             
             //ボタンのデザインを決定する
             button.backgroundColor = calendarBackGroundColor
-            button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+            button.setTitleColor(UIColor.white, for: UIControlState())
             button.titleLabel!.font = UIFont(name: "System", size: CGFloat(calendarFontSize))
             //button.layer.cornerRadius = CGFloat(buttonRadius)
             
             //配置したボタンに押した際のアクションを設定する
-            button.addTarget(self, action: "buttonTapped:", forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: #selector(FashionViewController.buttonTapped(_:)), for: .touchUpInside)
             
             //ボタンを配置する
             self.view.addSubview(button)
-            mArray.addObject(button)
+            mArray.add(button)
         }
         
     }
     
     //タイトル表記を設定する関数
     func setupCalendarTitleLabel() {
-        calendarBar.text = String("\(year)年\(month)月のカレンダー")
+        calendarBar.text = "\(year!)年\(month!)月のカレンダー"
     }
     
     //現在（初期表示時）の年月に該当するデータを取得する関数
@@ -348,14 +353,14 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
          * yyyy年mm月1日のデータを作成する。
          * 後述の関数 setupPrevCalendarData, setupNextCalendarData も同様です。
          *************/
-        let currentCalendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let currentComps: NSDateComponents = NSDateComponents()
+        let currentCalendar: Calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+        var currentComps: DateComponents = DateComponents()
         
         currentComps.year  = year
         currentComps.month = month
         currentComps.day   = 1
         
-        let currentDate: NSDate = currentCalendar.dateFromComponents(currentComps)!
+        let currentDate: Date = currentCalendar.date(from: currentComps)!
         recreateCalendarParameter(currentCalendar, currentDate: currentDate)
     }
     
@@ -371,14 +376,14 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
         
         //setupCurrentCalendarData()と同様の処理を行う
-        let prevCalendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let prevComps: NSDateComponents = NSDateComponents()
+        let prevCalendar: Calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+        var prevComps: DateComponents = DateComponents()
         
         prevComps.year  = year
         prevComps.month = month
         prevComps.day   = 1
         
-        let prevDate: NSDate = prevCalendar.dateFromComponents(prevComps)!
+        let prevDate: Date = prevCalendar.date(from: prevComps)!
         recreateCalendarParameter(prevCalendar, currentDate: prevDate)
     }
     
@@ -394,30 +399,30 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
         
         //setupCurrentCalendarData()と同様の処理を行う
-        let nextCalendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let nextComps: NSDateComponents = NSDateComponents()
+        let nextCalendar: Calendar = Calendar(identifier: Calendar.Identifier.gregorian)
+        var nextComps: DateComponents = DateComponents()
         
         nextComps.year  = year
         nextComps.month = month
         nextComps.day   = 1
         
-        let nextDate: NSDate = nextCalendar.dateFromComponents(nextComps)!
+        let nextDate: Date = nextCalendar.date(from: nextComps)!
         recreateCalendarParameter(nextCalendar, currentDate: nextDate)
     }
     
     //カレンダーのパラメータを再作成する関数
-    func recreateCalendarParameter(currentCalendar: NSCalendar, currentDate: NSDate) {
+    func recreateCalendarParameter(_ currentCalendar: Calendar, currentDate: Date) {
         
         //引数で渡されたものをもとに日付の情報を取得する
-        let currentRange: NSRange = currentCalendar.rangeOfUnit(NSCalendarUnit.Day, inUnit:NSCalendarUnit.Month, forDate:currentDate)
+        let currentRange: NSRange = (currentCalendar as NSCalendar).range(of: NSCalendar.Unit.day, in:NSCalendar.Unit.month, for:currentDate)
         
-        comps = currentCalendar.components([NSCalendarUnit.Year, NSCalendarUnit.Month, NSCalendarUnit.Day, NSCalendarUnit.Weekday],fromDate:currentDate)
+        comps = (currentCalendar as NSCalendar).components([NSCalendar.Unit.year, NSCalendar.Unit.month, NSCalendar.Unit.day, NSCalendar.Unit.weekday],from:currentDate)
         
         //年月日と最後の日付と曜日を取得(NSIntegerをintへのキャスト不要)
-        let currentYear: NSInteger      = comps.year
-        let currentMonth: NSInteger     = comps.month
-        let currentDay: NSInteger       = comps.day
-        let currentDayOfWeek: NSInteger = comps.weekday
+        let currentYear: NSInteger      = comps.year!
+        let currentMonth: NSInteger     = comps.month!
+        let currentDay: NSInteger       = comps.day!
+        let currentDayOfWeek: NSInteger = comps.weekday!
         let currentMax: NSInteger       = currentRange.length
         
         year      = currentYear
@@ -432,7 +437,7 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         //ビューからボタンオブジェクトを削除する
         for i in 0..<mArray.count {
-            mArray[i].removeFromSuperview()
+            (mArray[i] as AnyObject).removeFromSuperview()
         }
         
         //配列に格納したボタンオブジェクトも削除する
@@ -448,51 +453,58 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     //カレンダーボタンをタップした時のアクション
-    func buttonTapped(button: UIButton){
+    func buttonTapped(_ button: UIButton){
         
         //@todo:画面遷移等の処理を書くことができます。
         
         //コンソール表示
         print("\(year)年\(month)月\(button.tag)日が選択されました！")
         
+        dayNum = button.tag
+        print(dayNum)
+        
+        
         let animation = CABasicAnimation(keyPath: "transform")
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
         animation.duration = 0.1
         animation.repeatCount = 1
         animation.autoreverses = true
-        animation.removedOnCompletion = true
-        animation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.1, 1.1, 1.0))
-        button.layer.addAnimation(animation, forKey: nil)
+        animation.isRemovedOnCompletion = true
+        animation.toValue = NSValue(caTransform3D: CATransform3DMakeScale(1.1, 1.1, 1.0))
+        button.layer.add(animation, forKey: nil)
         
-//        for i in 0...6{
-//            
-//            if(i == 0){
-//                button.backgroundColor = UIColor(
-//                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
-//                )
-//            }else if(i == 6){
-//                button.backgroundColor = UIColor(
-//                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
-//                )
-//            }else{
-//                button.backgroundColor = UIColor(
-//                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
-//                )
-//            }
-//        }
+        
+        
+        //        for i in 0...6{
+        //
+        //            if(i == 0){
+        //                button.backgroundColor = UIColor(
+        //                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
+        //                )
+        //            }else if(i == 6){
+        //                button.backgroundColor = UIColor(
+        //                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
+        //                )
+        //            }else{
+        //                button.backgroundColor = UIColor(
+        //                    red: CGFloat(0.0), green: CGFloat(0.0), blue: CGFloat(0.0), alpha: CGFloat(1.0)
+        //                )
+        //            }
+        //        }
         //   let indexPath = tableView.indexPathForRowAtPoint(point)
-        let audioPath = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("click", ofType: "mp3")!)
-        audioPlayer = try? AVAudioPlayer(contentsOfURL: audioPath)
+        let audioPath = URL(fileURLWithPath: Bundle.main.path(forResource: "click", ofType: "mp3")!)
+        audioPlayer = try? AVAudioPlayer(contentsOf: audioPath)
         audioPlayer.play()
         
         //コードで画面遷移する
-        performSegueWithIdentifier("toSaveVC", sender: nil)
+        performSegue(withIdentifier: "toSaveVC", sender: nil)
         
         
     }
     
+    
     //前の月のボタンを押した際のアクション
-    @IBAction func getPrevMonthData(sender: UIButton) {
+    @IBAction func getPrevMonthData(_ sender: UIButton) {
         prevCalendarSettings()
         
         let animation = CABasicAnimation(keyPath: "transform")
@@ -500,21 +512,21 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         animation.duration = 0.1
         animation.repeatCount = 1
         animation.autoreverses = true
-        animation.removedOnCompletion = true
-        animation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.1, 1.1, 1.0))
-        sender.layer.addAnimation(animation, forKey: nil)
+        animation.isRemovedOnCompletion = true
+        animation.toValue = NSValue(caTransform3D: CATransform3DMakeScale(1.1, 1.1, 1.0))
+        sender.layer.add(animation, forKey: nil)
         //void audioRequested (float * output, int bufferSize, int nChanels)
         
         
-        let audioPath = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("click", ofType: "mp3")!)
-        audioPlayer = try? AVAudioPlayer(contentsOfURL: audioPath)
+        let audioPath = URL(fileURLWithPath: Bundle.main.path(forResource: "click", ofType: "mp3")!)
+        audioPlayer = try? AVAudioPlayer(contentsOf: audioPath)
         audioPlayer.play()
         
         
     }
     
     //次の月のボタンを押した際のアクション
-    @IBAction func getNextMonthData(sender: UIButton) {
+    @IBAction func getNextMonthData(_ sender: UIButton) {
         nextCalendarSettings()
         
         let animation = CABasicAnimation(keyPath: "transform")
@@ -522,23 +534,23 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         animation.duration = 0.1
         animation.repeatCount = 1
         animation.autoreverses = true
-        animation.removedOnCompletion = true
-        animation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.1, 1.1, 1.0))
-        sender.layer.addAnimation(animation, forKey: nil)
+        animation.isRemovedOnCompletion = true
+        animation.toValue = NSValue(caTransform3D: CATransform3DMakeScale(1.1, 1.1, 1.0))
+        sender.layer.add(animation, forKey: nil)
         
-        let audioPath = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("click", ofType: "mp3")!)
-        audioPlayer = try? AVAudioPlayer(contentsOfURL: audioPath)
+        let audioPath = URL(fileURLWithPath: Bundle.main.path(forResource: "click", ofType: "mp3")!)
+        audioPlayer = try? AVAudioPlayer(contentsOf: audioPath)
         audioPlayer.play()
         
     }
     
     //左スワイプで前月を表示
-    @IBAction func swipePrevCalendar(sender: UISwipeGestureRecognizer) {
+    @IBAction func swipePrevCalendar(_ sender: UISwipeGestureRecognizer) {
         prevCalendarSettings()
     }
     
     //右スワイプで次月を表示
-    @IBAction func swipeNextCalendar(sender: UISwipeGestureRecognizer) {
+    @IBAction func swipeNextCalendar(_ sender: UISwipeGestureRecognizer) {
         nextCalendarSettings()
     }
     
@@ -558,9 +570,19 @@ class FashionViewController: UIViewController, UIImagePickerControllerDelegate, 
         setupCalendarTitleLabel()
     }
     
-        
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let saveViewController : SaveViewController = segue.destination as! SaveViewController
+        saveViewController.getYear = self.year
+        saveViewController.getMonth = self.month
+        saveViewController.getDay = self.dayNum
+        saveViewController.getDayOfWeek = self.dayOfWeek
+        
+        
     }
     
     //func tableView(tableView: UITableView, numberOfRowsInSection section: Int) ->Int{
