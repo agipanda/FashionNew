@@ -95,6 +95,8 @@ class SaveViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     
     
+    
+    
     @IBOutlet var fashionimage: UIImageView!
     
     @IBAction func selectBackground(){
