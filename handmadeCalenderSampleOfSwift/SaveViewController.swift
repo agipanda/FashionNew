@@ -44,7 +44,7 @@ class SaveViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         print(getDay)
         print(getDayOfWeek)
         
-        displayDateLabel.text = "\(getYear!)年\(getMonth!)月\(getDay!)日(\(monthName[getDayOfWeek]))"
+        displayDateLabel.text = "\(getYear!)年\(getMonth!)月\(getDay!)日"
         
         
         // ここ
